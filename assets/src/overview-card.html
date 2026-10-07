@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --line: #262b36;
+    --text: #f2f0ea;
+    --muted: #9aa0ad;
+    --accent: #e8a24a;
+    --haiku: #6cc5a0;
+    --sonnet: #7aa7ff;
+    --opus: #e8a24a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1080px; height: 1350px; background: var(--bg); color: var(--text);
+    font-family: Inter, "Segoe UI", sans-serif; padding: 84px 80px 72px;
+    display: flex; flex-direction: column;
+  }
+  .tag { font: 500 22px/1 "JetBrains Mono", Consolas, monospace; color: var(--accent); letter-spacing: .04em; }
+  h1 { font-size: 76px; font-weight: 800; line-height: 1.04; letter-spacing: -.025em; margin-top: 30px; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .sub { font-size: 30px; line-height: 1.35; color: var(--muted); margin-top: 26px; max-width: 860px; }
+  .sub b { color: var(--text); font-weight: 600; }
+  .steps { margin-top: 52px; display: grid; gap: 14px; }
+  .step { display: grid; grid-template-columns: 64px 1fr; align-items: center; background: var(--panel);
+          border: 1px solid var(--line); border-radius: 18px; padding: 22px 28px; }
+  .num { font: 500 26px "JetBrains Mono", Consolas, monospace; color: var(--accent); }
+  .step p { font-size: 28px; font-weight: 500; }
+  .step p span { color: var(--muted); font-weight: 400; }
+  .models { display: flex; gap: 12px; margin-top: 30px; }
+  .pill { font: 500 24px "JetBrains Mono", Consolas, monospace; padding: 12px 20px; border-radius: 999px; border: 1px solid; }
+  .h { color: var(--haiku); border-color: var(--haiku); }
+  .s { color: var(--sonnet); border-color: var(--sonnet); }
+  .o { color: var(--opus); border-color: var(--opus); }
+  .pill small { color: var(--muted); font-size: 20px; margin-left: 6px; }
+  .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end;
+          border-top: 1px solid var(--line); padding-top: 30px; }
+  .repo { font: 500 26px "JetBrains Mono", Consolas, monospace; }
+  .repo div { color: var(--muted); font: 400 22px Inter, "Segoe UI", sans-serif; margin-bottom: 8px; }
+  .by { font-size: 24px; color: var(--muted); text-align: right; }
+  .by b { color: var(--text); font-weight: 600; display: block; font-size: 26px; }
+</style>
+</head>
+<body>
+  <div class="tag">FREE · OPEN SOURCE · CLAUDE CODE</div>
+  <h1>Opus conducts.<br><em>The right model</em><br>does the work.</h1>
+  <p class="sub"><b>Conductor</b> is a skill and a mod for Claude Code that routes every task to the right skill and the right model.</p>
+
+  <div class="steps">
+    <div class="step"><div class="num">01</div><p>Your prompt becomes a technical brief <span>· you check it</span></p></div>
+    <div class="step"><div class="num">02</div><p>Work split into task cards <span>· you approve</span></p></div>
+    <div class="step"><div class="num">03</div><p>Best-fit skills and model for each card</p></div>
+    <div class="step"><div class="num">04</div><p>Builds and tests run before anything is "done"</p></div>
+    <div class="step"><div class="num">05</div><p>/agents shows each agent's model and tokens</p></div>
+  </div>
+
+  <div class="models">
+    <span class="pill h">haiku<small>search</small></span>
+    <span class="pill s">sonnet<small>build</small></span>
+    <span class="pill o">opus<small>plan · risk</small></span>
+  </div>
+
+  <div class="foot">
+    <div class="repo"><div>Get it on GitHub</div>vgorla99/Condutor-Claude-Skill</div>
+    <div class="by"><b>Vitor Gorla</b>MIT licensed</div>
+  </div>
+</body>
+</html>

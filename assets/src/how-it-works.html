@@ -1,0 +1,72 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#2a303c;--text:#f2f0ea;--muted:#9aa0ad;--accent:#e8a24a;--haiku:#6cc5a0;--sonnet:#7aa7ff;--opus:#e8a24a;--ok:#6cc5a0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1600px;height:850px;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",sans-serif;padding:60px 64px;display:flex;flex-direction:column;gap:30px}
+header{display:flex;justify-content:space-between;align-items:baseline}
+h1{font-size:52px;font-weight:800;letter-spacing:-.02em}
+h1 span{color:var(--accent)}
+.tag{font:500 20px "JetBrains Mono",Consolas,monospace;color:var(--muted)}
+.flow{display:grid;grid-template-columns:1fr 34px 1.25fr 34px 1.15fr 34px 1fr;align-items:stretch}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:30px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.step{font:500 16px "JetBrains Mono",Consolas,monospace;color:var(--accent);letter-spacing:.06em}
+.small{font-size:17px;color:var(--muted);line-height:1.4}
+.quote{font-size:19px;line-height:1.35;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.code{font:500 15px/1.5 "JetBrains Mono",Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:#cfd3dc}
+.code b{color:var(--accent);font-weight:500}
+.card{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;font-size:17px;background:var(--bg)}
+.card small{color:var(--muted);font-size:14px;display:block;margin-top:2px}
+.pill{font:500 15px "JetBrains Mono",Consolas,monospace;padding:5px 11px;border-radius:999px;border:1px solid}
+.h{color:var(--haiku);border-color:var(--haiku)}.s{color:var(--sonnet);border-color:var(--sonnet)}.o{color:var(--opus);border-color:var(--opus)}
+.check{font-size:18px}.check span{color:var(--ok)}
+.bottom{display:grid;grid-template-columns:1.35fr 1fr;gap:30px;flex:1}
+.row{display:grid;grid-template-columns:200px 90px 100px 1fr;font:500 16px "JetBrains Mono",Consolas,monospace;padding:6px 0;border-bottom:1px dashed var(--line)}
+.row:last-of-type{border-bottom:0}
+.muted{color:var(--muted)}
+.ch{color:var(--haiku)}.cs{color:var(--sonnet)}.co{color:var(--opus)}
+.rules{display:grid;gap:14px}
+.rule{display:grid;grid-template-columns:34px 1fr;font-size:19px;line-height:1.35}
+.rule b{color:var(--accent)}
+</style></head><body>
+<header><h1>How <span>Conductor</span> works</h1><div class="tag">/conductor &lt;your task&gt;</div></header>
+
+<div class="flow">
+  <div class="box"><div class="step">01 · YOUR PROMPT</div>
+    <div class="quote">"build a section with images side by side that expand"</div>
+    <div class="small">Plain words and precise terms, mixed. Both are fine.</div></div>
+  <div class="arrow">→</div>
+  <div class="box"><div class="step">02 · TECHNICAL BRIEF</div>
+    <div class="code">&lt;request_technical&gt;<br><b>image accordion</b>: hovered panel grows, keyboard accessible, stacks on mobile<br>&lt;interpretations&gt; confidence: medium</div>
+    <div class="small">Precise parts kept as you wrote them. Every translation listed for you to check.</div></div>
+  <div class="arrow">→</div>
+  <div class="box"><div class="step">03 · CARDS · YOU APPROVE</div>
+    <div class="card"><div>C1 Find gallery patterns<small>skills: graphify</small></div><span class="pill h">haiku</span></div>
+    <div class="card"><div>C2 Build accordion<small>skills: frontend-design +1</small></div><span class="pill s">sonnet</span></div>
+    <div class="card"><div>C3 Review a11y and types<small>skills: accessibility</small></div><span class="pill s">sonnet</span></div></div>
+  <div class="arrow">→</div>
+  <div class="box"><div class="step">04 · VERIFY + REPORT</div>
+    <div class="check"><span>✓</span> build passes</div>
+    <div class="check"><span>✓</span> type check passes</div>
+    <div class="check"><span>✓</span> acceptance checks met</div>
+    <div class="small">A failed card retries one model up: haiku → sonnet → opus.</div></div>
+</div>
+
+<div class="bottom">
+  <div class="box"><div class="step">/agents · AGENT-LEDGER MOD · EXAMPLE</div>
+    <div class="row"><span>conductor</span><span class="co">opus</span><span class="muted">idle</span><span>in 48.2k · out 3.1k · cache 82%</span></div>
+    <div class="row"><span>Explore</span><span class="ch">haiku</span><span class="muted">done</span><span>in 12.4k · out 0.9k · cache 61%</span></div>
+    <div class="row"><span>general-purpose</span><span class="cs">sonnet</span><span class="muted">done</span><span>in 31.0k · out 6.2k · cache 74%</span></div>
+    <div class="row"><span>general-purpose</span><span class="cs">sonnet</span><span class="muted">running</span><span class="muted">in 0 · out 0 · cache -</span></div>
+    <div class="small">Exact tokens from the API, per agent and per model. Cache = share of the prompt served from cache.</div></div>
+  <div class="box"><div class="step">WHY IT STAYS EFFICIENT</div>
+    <div class="rules">
+      <div class="rule"><b>1</b><span>Small tasks run inline. No orchestration overhead.</span></div>
+      <div class="rule"><b>2</b><span>Workers return 10 lines max. Opus reads summaries.</span></div>
+      <div class="rule"><b>3</b><span>Cards run in parallel only when they write different files.</span></div>
+      <div class="rule"><b>4</b><span>Skills picked by fit from everything installed.</span></div>
+    </div></div>
+</div>
+</body></html>
