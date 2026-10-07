@@ -47,7 +47,7 @@ AGENT-LEDGER MOD ─ /agents: every agent, its model, status, tokens and cache s
 Clone the repo:
 
 ```bash
-git clone https://github.com/vgorla99/conductor.git ~/conductor
+git clone https://github.com/vgorla99/Condutor-Claude-Skill.git ~/conductor
 ```
 
 Copy the skill so `/conductor` is available:
@@ -69,7 +69,7 @@ On Windows PowerShell, use your user folder, for example `C:\Users\<you>\conduct
 Inside Claude Code:
 
 ```
-/plugin marketplace add vgorla99/conductor
+/plugin marketplace add vgorla99/Condutor-Claude-Skill
 /plugin install conductor@conductor
 /plugin install agent-ledger@conductor
 /reload-plugins
