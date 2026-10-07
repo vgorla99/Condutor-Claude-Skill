@@ -1,8 +1,12 @@
 # Conductor
 
+![Conductor: Opus conducts, the right model does the work](assets/social-preview.png)
+
 **An orchestration skill and a mod for Claude Code.** One Opus session acts as the conductor: it turns your prompt into a precise technical brief, splits the work into task cards, picks the right skills, agent and model for each card (Haiku, Sonnet or Opus), sends the work out, checks the results itself and reports back. The `agent-ledger` mod shows you, live, which agent ran on which model and how many tokens it used.
 
 The goal is **token and work efficiency**: every piece of work runs on the cheapest model that does it right, with the skills that fit it, and nothing is done twice. It is not "spend less at any cost".
+
+![How Conductor works: prompt, technical brief, task cards with models, verify and report, plus the /agents ledger](assets/how-it-works.png)
 
 ```
 You: /conductor <task>
@@ -213,6 +217,18 @@ claude plugin test .
 
 - **Routing guard:** an opt-in `agent.spawn` hook that enforces the rubric's model and an Opus budget.
 - **Prompt cost preview:** estimate input tokens and likely output range before a turn runs.
+
+## Share it
+
+A ready-made card for posts (1080×1350):
+
+<img src="assets/overview-card.png" alt="Conductor overview card: five steps from prompt to verified result, with haiku, sonnet and opus tags" width="420">
+
+The cards are plain HTML in `assets/src/`. Edit one and render it with any Chromium browser, for example:
+
+```bash
+chrome --headless=new --hide-scrollbars --window-size=1600,850 --screenshot=assets/how-it-works.png assets/src/how-it-works.html
+```
 
 ## License
 
