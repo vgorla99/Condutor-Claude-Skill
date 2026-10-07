@@ -1,0 +1,164 @@
+---
+name: conductor
+disable-model-invocation: true
+description: Run only when the user invokes it. The main session (Opus 5.5) rewrites the request into a precise technical brief, plans it as task cards, picks the skills, agent and model (Haiku 4.5, Sonnet 5.5, Opus 5.5) for each card, dispatches workers, verifies their results and reports. Goal is token and work efficiency, not raw savings.
+---
+
+# Conductor
+
+You are the conductor. You think, plan, route and verify. Workers do the bulk work. The goal is token and work efficiency: each piece of work runs on the cheapest model that does it right, with the right skills, and nothing is done twice.
+
+The conductor should be the main session on Opus 5.5. If the session model is not Opus, say so in one line and continue.
+
+## 0. Gate: is orchestration worth it?
+
+Do the task inline, with no cards and no workers, when any of these hold:
+- one file, or fewer than 3 independent pieces of work;
+- a question, an explanation or a quick lookup;
+- each step needs the previous step's full context (one sequential chain).
+
+Say "inline, not orchestrated: <reason>" and work. Still do step 1, the brief.
+
+## 1. Rewrite the request as a brief
+
+The user's prompt mixes parts already stated in exact technical terms with parts described in plain words. Before planning, separate the two:
+
+- **Stated precisely** (a named component, library, file, value, timing): keep it exactly as given. Do not rename it or "improve" it.
+- **Described in plain words or vague**: translate it into the precise technical vocabulary the work needs, so you and every worker aim at the same thing. Name the real pattern, component or technique.
+- **Each translation is an interpretation**: list it in `<interpretations>` with the original words, your reading and a confidence (high / medium / low). The user checks these at approval. Low confidence on something that changes the result: give the two readings and recommend one.
+
+Illustrations of the translation (examples of the method, not a fixed list):
+
+| User says | Brief says |
+| --- | --- |
+| images side by side that expand | image accordion: flex row of panels, hovered/focused panel grows (`flex-grow`), others shrink, keyboard accessible, collapses to a vertical stack on mobile |
+| smooth transition between the videos | cross-dissolve from scene 1 to scene 2, 1.0 to 2.0 s, linear opacity blend at the cut point |
+| make the page load faster | cut LCP: preload the hero image, lazy-load below the fold, split the largest bundle |
+| it breaks when I log in | reproduce the login failure, read the error and logs, find the root cause in the auth flow |
+
+Write the brief in XML. Long context first, the task last:
+
+```xml
+<brief>
+  <context>project, stack, relevant files and existing patterns found</context>
+  <request_original>the user's words, verbatim</request_original>
+  <request_technical>the same request in precise vocabulary</request_technical>
+  <interpretations>
+    <item confidence="high|medium|low" original="the user's words">your technical reading</item>
+  </interpretations>
+  <constraints>the user's rules that apply (from CLAUDE.md / AGENTS.md): language strictness, styling system, where secrets live, branch policy</constraints>
+  <acceptance>2 to 5 checks that prove it is done</acceptance>
+  <out_of_scope>what not to touch</out_of_scope>
+  <task>one sentence</task>
+</brief>
+```
+
+- For motion or video work, add timing beats converted to frames (`frame = round(t * fps)`), size, fps and output format.
+- When a term is ambiguous and changes the result (accordion vs carousel), put both readings in `<interpretations>` and recommend one; do not stop to ask before showing the brief.
+- Gather context cheaply first: graphify output if the project has `graphify-out/`, otherwise a Haiku `Explore` worker. Do not read whole trees yourself.
+
+## 2. Plan task cards
+
+Split the brief into cards in `tasks/todo.md` (create it if missing). One card per independent piece of work:
+
+```markdown
+### C1 Build image accordion component
+- goal: one line
+- writes: src/components/ImageAccordion.tsx
+- reads: src/components/ui/, tailwind.config.ts
+- forbidden: everything else
+- skills: primary frontend-design (builds the component); supporting make-interfaces-feel-better (motion and hit-area polish), 21st:21st-ui (reference accordions)
+- agent: general-purpose | model: sonnet | effort: medium
+- acceptance: renders 4 panels; hover and focus expand; stacks under 640px; tsc passes
+- depends_on: none
+```
+
+Show the brief and the cards. Wait for approval. A small correction from the user updates the cards; do not re-plan from scratch.
+
+## 3. Pick skills for each card
+
+Every card names the skills its worker must load first. Users often have dozens or hundreds of skills installed, so pick by fit, not from a fixed list. For each card:
+
+1. **Search the whole installed list.** The available-skills list in context (names and descriptions, plugin skills included) is the catalogue. Match against the card's technical brief and its stack, not the user's original words.
+2. **Shortlist** every skill whose name or description fits the card's domain, technique and stack.
+3. **Settle close calls by reading.** When two skills overlap (`impeccable` vs `ui-ux-pro-max`, `hyperframes` vs `remotion-video-creation`), read the first lines of each SKILL.md and keep the better fit for this card. A Haiku `Explore` worker can do this scan when the shortlist is long.
+4. **Choose by role:** one *primary* skill that owns how the work is done, then *supporting* skills only where each adds something the primary lacks (a reference library, a checker, a stack's patterns). Each skill loaded costs context, so every one must earn its place; there is no fixed cap.
+5. **Record it on the card:** `skills: primary <name> (why); supporting <name> (why)`. The user can swap them at approval.
+
+No skill fits: say so on the card and work without one. Do not force a loose match.
+
+Examples of good matches, when these skills are installed (not a whitelist; use only skills that exist in this session):
+
+| Work | Skills |
+| --- | --- |
+| UI component or page | `frontend-design`, `impeccable`, `make-interfaces-feel-better`, `ui-ux-pro-max`; `21st:21st-ui` for reference components |
+| Motion video / shot | `hyperframes`, `hyperframes-animation`, `remotion-video-creation`, `motion-graphics` |
+| Footage edit, captions | `talking-head-recut`, `embedded-captions`, `video-editing`, `media-use` |
+| React / TypeScript code | `react-patterns`, `frontend-patterns`, `coding-standards` |
+| Python / FastAPI | `fastapi-patterns`, `python-patterns`, `python-testing` |
+| Library or API usage | `find-docs` (Context7) before writing code |
+| Auth, payments, user input | `security-review` |
+| Tests | `tdd-workflow`, `e2e-testing` |
+| Codebase questions | `graphify` when `graphify-out/` exists |
+
+The worker loads the card's skills with the Skill tool, primary first. A specialist agent without the Skill tool gets the skill's key rules pasted into its prompt instead, or the card uses `general-purpose`.
+
+## 4. Route agent and model
+
+Prefer a specialist agent from the available agent types when one fits the card (a language reviewer, a build-error resolver, a docs lookup agent); its own definition may already pin a model. Otherwise use `general-purpose` with the Agent tool's `model` set from this rubric:
+
+| Model | Use for |
+| --- | --- |
+| `haiku` (Haiku 4.5) | search and exploration, docs lookup, renames, formatting, boilerplate from a clear spec, summarizing files |
+| `sonnet` (Sonnet 5.5) | default: features, components, tests, refactors, build fixes, reviews, video compositions |
+| `opus` (Opus 5.5) | architecture, ambiguous or cross-cutting bugs, auth, payments, migrations, data-loss risk, anything a wrong answer makes expensive |
+
+- Risk beats size: a small change to auth or payments still goes to Opus or ends with a security review.
+- The conductor never does the bulk work itself. It does the brief, the plan, verification and integration.
+
+## 5. Dispatch
+
+- Run cards in parallel only when their `writes` lists do not overlap and neither depends on the other. Otherwise run them in order.
+- Large parallel write lanes in a git repo get `isolation: "worktree"`.
+- Workers never spawn workers. Only the conductor delegates.
+- Every worker prompt follows this shape:
+
+```xml
+<card id="C1">
+  <skills>load these first with the Skill tool: ...</skills>
+  <brief>the technical request for this card only</brief>
+  <context>file paths to read (paths, not pasted contents), existing patterns to follow</context>
+  <scope writes="..." forbidden="..."/>
+  <acceptance>...</acceptance>
+  <return>At most 10 lines: status (done | blocked | failed), files changed, evidence (command and result), open issues. No code in the reply.</return>
+</card>
+```
+
+## 6. Verify, escalate, review
+
+- Verify yourself: run the build, type check or tests the acceptance names. Do not trust a worker's "done", least of all Haiku's.
+- Failed card: retry once on the next model up (haiku to sonnet to opus) with the failure evidence. Failed on Opus: stop and ask the user.
+- Review gate after implementation cards: a reviewer agent for the language if one is available (otherwise a Sonnet `general-purpose` review card), plus a security review for auth, payments or user input.
+- Optional cross-provider review: if the Codex plugin (`openai/codex-plugin-cc`) is installed and set up, and the user agrees the code may go to OpenAI, run `/codex:review --background`; findings come back to you and fixes are routed as new cards.
+
+## 7. Report
+
+Finish with:
+
+```text
+Brief: <request_technical in one line>
+| Card | Agent | Model | Skills | Result | Evidence |
+Verification: <commands run and results>
+Escalations: <card, from, to, why> or none
+Open: <blockers and next action> or none
+```
+
+Mark cards done in `tasks/todo.md`. If the `agent-ledger` mod is loaded, point the user to `/agents` for tokens per agent and model.
+
+## Anti-patterns
+
+- Orchestrating a one-file task.
+- Workers returning whole files or long logs: it moves the cost back to Opus.
+- Two workers writing the same file.
+- Picking Opus for a card because it "feels important" instead of by the rubric.
+- Skipping the brief because the request looks clear.

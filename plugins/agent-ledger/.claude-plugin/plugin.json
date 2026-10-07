@@ -1,0 +1,8 @@
+{
+  "name": "agent-ledger",
+  "version": "0.1.0",
+  "description": "Shows every agent of the session, the model it ran on and its tokens; /agents opens the pane",
+  "author": { "name": "Vitor Gorla", "url": "https://github.com/vgorla99" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

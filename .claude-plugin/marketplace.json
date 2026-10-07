@@ -1,0 +1,27 @@
+{
+  "name": "conductor",
+  "owner": {
+    "name": "Vitor Gorla",
+    "url": "https://github.com/vgorla99"
+  },
+  "metadata": {
+    "description": "Conductor: an Opus-led orchestration skill that briefs, plans and routes work to Haiku, Sonnet and Opus workers, plus the agent-ledger mod that shows which agent ran on which model and what it used.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "conductor",
+      "description": "Orchestration skill: rewrites your prompt as a technical brief, plans task cards, picks skills, agent and model per card, verifies and reports.",
+      "version": "0.1.0",
+      "author": { "name": "Vitor Gorla" },
+      "source": "./plugins/conductor"
+    },
+    {
+      "name": "agent-ledger",
+      "description": "Mod: /agents pane with every agent, its model, status, tokens and cache share; last turn's tokens by model above the prompt.",
+      "version": "0.1.0",
+      "author": { "name": "Vitor Gorla" },
+      "source": "./plugins/agent-ledger"
+    }
+  ]
+}

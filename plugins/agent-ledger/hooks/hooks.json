@@ -1,0 +1,4 @@
+{
+  "description": "agent-ledger hooks module",
+  "modules": ["./register.tsx"]
+}

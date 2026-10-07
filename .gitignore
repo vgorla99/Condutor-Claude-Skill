@@ -1,0 +1,5 @@
+node_modules/
+# written by Claude Code when the mod loads
+plugins/agent-ledger/.claude-plugin/types/
+plugins/agent-ledger/tsconfig.json
+.DS_Store
