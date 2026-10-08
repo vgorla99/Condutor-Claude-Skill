@@ -21,11 +21,29 @@
     {
       "name": "agent-ledger",
       "description": "Mod: /agents pane with every agent, its model, status, tokens and cache share; last turn's tokens by model above the prompt.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": {
         "name": "Vitor Gorla"
       },
       "source": "./plugins/agent-ledger"
+    },
+    {
+      "name": "conductor-lint",
+      "description": "Conductor plus a lint layer: ESLint, line budgets per card, worker efficiency rules, agent-lint reports and one fix round.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Vitor Gorla"
+      },
+      "source": "./plugins/conductor-lint"
+    },
+    {
+      "name": "agent-lint",
+      "description": "Mod: ESLint for agent work. Reports what each worker left behind (TODOs, stubs, skipped tests, out-of-scope files, open issues, ESLint, line budget) to the conductor; /leftovers pane.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Vitor Gorla"
+      },
+      "source": "./plugins/agent-lint"
     }
   ]
 }

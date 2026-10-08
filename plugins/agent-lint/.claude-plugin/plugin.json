@@ -1,0 +1,8 @@
+{
+  "name": "agent-lint",
+  "version": "0.1.0",
+  "description": "ESLint for agent work: checks what each worker left behind (TODOs, stubs, skipped tests, out-of-scope files, open issues, ESLint, line budget) and reports it to the conductor",
+  "author": { "name": "Vitor Gorla", "url": "https://github.com/vgorla99" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

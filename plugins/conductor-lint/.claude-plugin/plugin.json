@@ -1,0 +1,10 @@
+{
+  "name": "conductor-lint",
+  "version": "0.1.0",
+  "description": "Conductor plus a lint layer: ESLint, a line budget per card, worker efficiency rules, agent-lint leftover reports and one fix round",
+  "author": {
+    "name": "Vitor Gorla",
+    "url": "https://github.com/vgorla99"
+  },
+  "license": "MIT"
+}
