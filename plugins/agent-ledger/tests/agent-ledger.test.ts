@@ -68,7 +68,7 @@ test('counts the main loop as the conductor, and /agents-reset clears the ledger
   const pane = await mountPane($)
   expect(await pane.find({ type: 'Text', text: /conductor\s+opus\s+idle/ })).toBeDefined()
 
-  await $.command.run({ command: 'agents-reset', args: '' })
+  await $.command.run({ command: 'agents-reset', args: '', origin: { kind: 'composer' } })
   expect(await pane.find({ type: 'Text', text: /No agents yet/ })).toBeDefined()
 })
 
@@ -83,7 +83,7 @@ test('/agents-reset names the run and /agents-export saves it as JSON', async ($
     return { value: undefined }
   })
 
-  await $.command.run({ command: 'agents-reset', args: 'A accordion' })
+  await $.command.run({ command: 'agents-reset', args: 'A accordion', origin: { kind: 'composer' } })
   await $.turn.complete({
     answer: 'ok',
     durationMs: 10,
@@ -101,4 +101,11 @@ test('/agents-reset names the run and /agents-export saves it as JSON', async ($
   expect(record.totals.opusShare).toBe('100%')
   expect(record.totals.cacheHit).toBe('75%')
   expect(answer.text).toContain('A-accordion')
+})
+
+test('security: a worker cannot clear the ledger', async ($, on) => {
+  on('turn.complete', () => ({ text: '' }))
+  on('clock.now', () => ({ value: 1_760_000_000_000 }))
+  const answer = await $.command.run({ command: 'agents-reset', args: '' })
+  expect(answer.text).toContain('only the person')
 })

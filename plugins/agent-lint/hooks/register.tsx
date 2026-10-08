@@ -306,7 +306,11 @@ export const register: Register = on => {
     return { text: `agent-lint mode: ${await read($, mode)} · eslint: ${eslintText}` }
   })
 
+  // Clearing findings is the person's call: a worker must not wipe its own leftovers
   on('command.run', { command: 'leftovers-reset' }, async ($, e) => {
+    if (e.origin?.kind !== 'composer') {
+      return { text: 'agent-lint: only the person at the prompt can clear findings.' }
+    }
     const name = e.args.trim().replace(/[^A-Za-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '') || 'run'
     await update($, reports, () => [])
     await update($, label, () => name)

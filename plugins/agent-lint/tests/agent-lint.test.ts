@@ -127,3 +127,12 @@ test('security: only the person at the prompt can change settings; programs star
   expect(eslintRun?.[0]).toBe('C:/Program Files/nodejs/node.exe')
   expect(calls.filter(argv => argv[0] === 'git').every(argv => argv.includes('-C'))).toBe(true)
 })
+
+test('security: a worker cannot clear its own findings', async ($, on) => {
+  fakeRepo(on)
+  await runWorker($, 'conductor-lint')
+  const wiped = await $.command.run({ command: 'leftovers-reset', args: '' })
+  expect(wiped.text).toContain('only the person')
+  const text = ((await $.tool.call({ tool: 'Bash', command: 'npm run build' })).context ?? []).join(' ')
+  expect(text).toContain('todo-left')
+})

@@ -110,7 +110,11 @@ export const register: Register = on => {
     return { text: 'Agent ledger opened.' }
   })
 
+  // Clearing the ledger is the person's call: a worker must not erase its own record
   on('command.run', { command: 'agents-reset' }, async ($, e) => {
+    if (e.origin?.kind !== 'composer') {
+      return { text: 'agent-ledger: only the person at the prompt can clear the ledger.' }
+    }
     const label = cleanLabel(e.args)
     const startedAt = await $.clock.now()
     await update($, agents, () => [])
