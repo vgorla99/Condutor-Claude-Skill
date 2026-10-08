@@ -28,7 +28,8 @@ function stamp(ms: number): string {
 async function exportDir($: EngineInterface): Promise<string> {
   const home = (await $.env.get('USERPROFILE')) ?? (await $.env.get('HOME')) ?? '.'
   const dir = `${home.replace(/\\/g, '/')}/.claude/conductor-runs`
-  await $.process.run(['node', '-e', 'require("fs").mkdirSync(process.argv[1], { recursive: true })', dir])
+  // cwd is the home folder: a node.exe inside the project must never be the one that runs
+  await $.process.run(['node', '-e', 'require("fs").mkdirSync(process.argv[1], { recursive: true })', dir], { cwd: home })
   return dir
 }
 

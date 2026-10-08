@@ -1,6 +1,6 @@
 {
   "name": "agent-ledger",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Shows every agent of the session, the model it ran on and its tokens; /agents opens the pane, /agents-reset <label> names a run, /agents-export saves it",
   "author": {
     "name": "Vitor Gorla",

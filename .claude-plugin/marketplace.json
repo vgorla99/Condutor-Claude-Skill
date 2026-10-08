@@ -21,7 +21,7 @@
     {
       "name": "agent-ledger",
       "description": "Mod: /agents pane with every agent, its model, status, tokens and cache share; last turn's tokens by model above the prompt.",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": {
         "name": "Vitor Gorla"
       },
@@ -39,7 +39,7 @@
     {
       "name": "agent-lint",
       "description": "Mod: ESLint for agent work. Reports what each worker left behind (TODOs, stubs, skipped tests, out-of-scope files, open issues, ESLint, line budget) to the conductor; /leftovers pane.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "author": {
         "name": "Vitor Gorla"
       },

@@ -49,9 +49,23 @@ function shortModel(id: string): string {
 // (fsmonitor, clean/smudge filters, external diff, textconv). Turn every one off.
 const GIT_SAFE = ['-c', 'core.fsmonitor=false', '-c', 'diff.external=']
 
-async function git($: EngineInterface, root: string | undefined, args: string[]): Promise<string | null> {
-  const ran = await $.process.run(['git', ...GIT_SAFE, ...args], root ? { cwd: root } : undefined)
+// Programs are started from the home folder, never from the project: on Windows a
+// program name without a path is looked up in the current folder first, so a repo
+// shipping its own git.exe or node.exe would otherwise run instead.
+async function homeDir($: EngineInterface): Promise<string> {
+  return ((await $.env.get('USERPROFILE')) ?? (await $.env.get('HOME')) ?? '/').replace(/\\/g, '/')
+}
+
+async function git($: EngineInterface, dir: string | undefined, args: string[]): Promise<string | null> {
+  const target = dir ?? (await $.session.cwd())
+  const ran = await $.process.run(['git', ...GIT_SAFE, '-C', target, ...args], { cwd: await homeDir($) })
   return ran.exitCode === 0 ? ran.stdout : null
+}
+
+// The absolute path of node, resolved from the home folder
+async function nodePath($: EngineInterface): Promise<string | null> {
+  const ran = await $.process.run(['node', '-e', 'process.stdout.write(process.execPath)'], { cwd: await homeDir($) })
+  return ran.exitCode === 0 && ran.stdout.trim() !== '' ? ran.stdout.trim() : null
 }
 
 async function repoRoot($: EngineInterface): Promise<string | null> {
@@ -99,7 +113,11 @@ async function eslint($: EngineInterface, root: string, added: ReadonlyMap<strin
   if (!configs.some(Boolean)) {
     return []
   }
-  const ran = await $.process.run(['node', bin, '-f', 'json', '--no-warn-ignored', ...files], {
+  const node = await nodePath($)
+  if (node === null) {
+    return []
+  }
+  const ran = await $.process.run([node, bin, '-f', 'json', '--no-warn-ignored', ...files], {
     cwd: root,
     timeoutMs: ESLINT_TIMEOUT_MS,
   })
@@ -173,9 +191,9 @@ async function lintWorker($: EngineInterface, agentId: string, info: Pending, an
 }
 
 async function exportDir($: EngineInterface): Promise<string> {
-  const home = (await $.env.get('USERPROFILE')) ?? (await $.env.get('HOME')) ?? '.'
-  const dir = `${home.replace(/\\/g, '/')}/.claude/conductor-runs`
-  await $.process.run(['node', '-e', 'require("fs").mkdirSync(process.argv[1], { recursive: true })', dir])
+  const home = await homeDir($)
+  const dir = `${home}/.claude/conductor-runs`
+  await $.process.run(['node', '-e', 'require("fs").mkdirSync(process.argv[1], { recursive: true })', dir], { cwd: home })
   return dir
 }
 
@@ -272,9 +290,13 @@ export const register: Register = on => {
     return { text: 'agent-lint opened.' }
   })
 
-  // Typed by the person: the only way to change ESLint execution
+  // Settings change only from the person's own Enter (origin stamped by the engine):
+  // a worker or another plugin running /agent-lint can read the mode, not change it
   on('command.run', { command: 'agent-lint' }, async ($, e) => {
     const wanted = e.args.trim()
+    if (wanted !== '' && e.origin?.kind !== 'composer') {
+      return { text: 'agent-lint: settings can only be changed by the person at the prompt.' }
+    }
     if (wanted === 'report' || wanted === 'observe') {
       await update($, mode, () => wanted)
     } else if (wanted === 'eslint on' || wanted === 'eslint off') {

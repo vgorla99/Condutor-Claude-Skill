@@ -14,7 +14,8 @@ function fakeRepo(on: On, options: { committedSettings?: string; eslintPresent?:
   let statusCalls = 0
   on('process.run', ($, e) => {
     calls.push([...e.argv])
-    const args = e.argv.slice(1).join(' ').replace(/^(-c \S+ )+/, '')
+    if (e.argv[1] === '-e') return ok('C:/Program Files/nodejs/node.exe')
+    const args = e.argv.slice(1).join(' ').replace(/^((-c|-C) \S+ )+/, '')
     if (args.startsWith('show')) return options.committedSettings ? ok(options.committedSettings) : { value: { exitCode: 128, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }
     if (args.startsWith('rev-parse')) return ok('C:/repo\n')
     if (args.startsWith('status')) return ok(statusCalls++ === 0 ? '' : ' M src/a.tsx\0 M src/lib/utils.ts\0')
@@ -23,6 +24,8 @@ function fakeRepo(on: On, options: { committedSettings?: string; eslintPresent?:
     if (args.endsWith('src/lib/utils.ts')) return ok('@@ -1,0 +5,1 @@\n+export const x = 1\n')
     return ok('')
   })
+  on('env.get', ($, e) => ({ value: e.name === 'USERPROFILE' ? 'C:/Users/test' : undefined }))
+  on('session.cwd', () => ({ value: 'C:/repo' }))
   on('fs.exists', () => ({ value: options.eslintPresent === true }))
   on('agent.spawn', () => ({ model: 'claude-haiku-5-5', agentId: 'w1' }))
   on('turn.complete', () => ({ text: '' }))
@@ -110,4 +113,17 @@ test('security: a worker loading /conductor mid-run cannot switch reporting off'
   await $.skill.prompt({ skill: 'conductor', text: '' })
   const mode = await $.command.run({ command: 'agent-lint', args: '' })
   expect(mode.text).toContain('mode: report')
+})
+
+test('security: only the person at the prompt can change settings; programs start from the home folder', async ($, on) => {
+  const calls = fakeRepo(on, { eslintPresent: true })
+  const fromPlugin = await $.command.run({ command: 'agent-lint', args: 'eslint on' })
+  expect(fromPlugin.text).toContain('only be changed by the person')
+
+  await $.command.run({ command: 'agent-lint', args: 'eslint on', origin: { kind: 'composer' } })
+  await runWorker($, 'conductor-lint')
+
+  const eslintRun = calls.find(argv => argv.join(' ').includes('eslint.js'))
+  expect(eslintRun?.[0]).toBe('C:/Program Files/nodejs/node.exe')
+  expect(calls.filter(argv => argv[0] === 'git').every(argv => argv.includes('-C'))).toBe(true)
 })
