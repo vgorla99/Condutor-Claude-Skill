@@ -202,6 +202,32 @@ claude plugin validate .
 claude plugin test .
 ```
 
+## Conductor-Lint and agent-lint (experimental)
+
+A second skill, **`conductor-lint`**, is Conductor plus a lint layer, so the two can be compared on the same tasks:
+
+- **Lint gate:** uses the project's ESLint (or ruff). With none, it proposes a one-time setup card based on [Matheus Gomes' ESLint setup guide](https://github.com/soumatheusgomes/vibe-coding-toolkit/blob/main/docs/prompts/07-eslint-complete-setup.md) (MIT).
+- **Line budget per card:** the worker states its approach and an estimated line count before coding, and has to justify going over. A warning, never an error, so nobody crams code to hit a number.
+- **Efficiency rules:** reuse what exists, no speculative abstractions, nothing left unfinished, lint your own files.
+- **One fix round:** findings are collected while cards run, fixed together at the end in one round, and whatever is left goes to you.
+
+The **`agent-lint`** mod is ESLint for agent work. When a worker finishes it checks the lines that worker added and reports, ESLint-style, what it left behind:
+
+| Rule | Severity | Catches |
+| --- | --- | --- |
+| `todo-left` | error | TODO / FIXME / HACK / XXX |
+| `stub-left` | error | not implemented, `throw new Error("TODO")`, lorem ipsum, TBD, PLACEHOLDER |
+| `skipped-test` | error | `.only`, `.skip`, `xit`, `@pytest.mark.skip` |
+| `out-of-scope` | error | files changed outside the card's `writes` |
+| `open-issue` | error | the worker's own "open issues" line |
+| `eslint/<rule>` | as configured | the project's ESLint, on added lines only. **Off until you run `/agent-lint eslint on`**: ESLint executes the project's config file as code, so the mod never runs it on its own |
+| `diff-budget` | warn | lines added over the card's budget (tests, lockfiles and generated files excluded) |
+| `console-left`, `any-type` | warn | debug output, `any` in TypeScript |
+
+Under `/conductor-lint` it sends each report back to the conductor (report mode); under `/conductor` it only records (observe mode), so plain runs are measured too. `/leftovers` opens the pane; `.agentlint.json` sets any rule to `off`, `warn` or `error`.
+
+`agent-ledger` 0.2.0 adds named runs and exports for the comparison: `/agents-reset <label>`, `/agents-export`. How to run the comparison and the scorecard: [docs/comparison.md](docs/comparison.md).
+
 ## Customize
 
 - **Model rubric, gate, report format:** edit `SKILL.md` sections 0, 4 and 7.

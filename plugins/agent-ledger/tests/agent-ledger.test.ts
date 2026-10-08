@@ -23,6 +23,8 @@ async function mountPane($: Engine) {
 test('shows a subagent with its type, model, tokens and cache share', async ($, on) => {
   on('agent.spawn', () => ({ model: 'claude-haiku-4-5-20251001', agentId: 'a1' }))
   on('turn.complete', () => ({ text: '' }))
+  on('clock.now', () => ({ value: 1_760_000_000_000 }))
+  on('env.get', ($, e) => ({ value: e.name === 'USERPROFILE' ? 'C:/Users/test' : undefined }))
 
   await $.agent.spawn({
     tool_use_id: 'tu1',
@@ -52,6 +54,8 @@ test('shows a subagent with its type, model, tokens and cache share', async ($, 
 
 test('counts the main loop as the conductor, and /agents-reset clears the ledger', async ($, on) => {
   on('turn.complete', () => ({ text: '' }))
+  on('clock.now', () => ({ value: 1_760_000_000_000 }))
+  on('env.get', ($, e) => ({ value: e.name === 'USERPROFILE' ? 'C:/Users/test' : undefined }))
 
   await $.turn.complete({
     answer: 'plan ready',
@@ -64,6 +68,44 @@ test('counts the main loop as the conductor, and /agents-reset clears the ledger
   const pane = await mountPane($)
   expect(await pane.find({ type: 'Text', text: /conductor\s+opus\s+idle/ })).toBeDefined()
 
-  await $.command.run({ command: 'agents-reset', args: '' })
+  await $.command.run({ command: 'agents-reset', args: '', origin: { kind: 'composer' } })
   expect(await pane.find({ type: 'Text', text: /No agents yet/ })).toBeDefined()
+})
+
+test('/agents-reset names the run and /agents-export saves it as JSON', async ($, on) => {
+  const writes: { path: string; text: string }[] = []
+  on('turn.complete', () => ({ text: '' }))
+  on('clock.now', () => ({ value: 1_760_000_000_000 }))
+  on('env.get', ($, e) => ({ value: e.name === 'USERPROFILE' ? 'C:/Users/test' : undefined }))
+  on('process.run', () => ({ value: { exitCode: 0, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
+  on('fs.write', ($, e) => {
+    writes.push({ path: e.path, text: e.text })
+    return { value: undefined }
+  })
+
+  await $.command.run({ command: 'agents-reset', args: 'A accordion', origin: { kind: 'composer' } })
+  await $.turn.complete({
+    answer: 'ok',
+    durationMs: 10,
+    isAborted: false,
+    turnId: 't3',
+    reason: 'answer',
+    usage: { ...haikuUsage, model: 'claude-opus-5-5' },
+  })
+  const answer = await $.command.run({ command: 'agents-export', args: '' })
+
+  expect(writes).toHaveLength(1)
+  expect(writes[0]?.path).toMatch(/[\\/]\.claude[\\/]conductor-runs[\\/]A-accordion-\d{8}-\d{4}-ledger\.json$/)
+  const record = JSON.parse(writes[0]?.text ?? '{}')
+  expect(record.label).toBe('A-accordion')
+  expect(record.totals.opusShare).toBe('100%')
+  expect(record.totals.cacheHit).toBe('75%')
+  expect(answer.text).toContain('A-accordion')
+})
+
+test('security: a worker cannot clear the ledger', async ($, on) => {
+  on('turn.complete', () => ({ text: '' }))
+  on('clock.now', () => ({ value: 1_760_000_000_000 }))
+  const answer = await $.command.run({ command: 'agents-reset', args: '' })
+  expect(answer.text).toContain('only the person')
 })
