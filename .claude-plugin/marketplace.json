@@ -39,7 +39,7 @@
     {
       "name": "agent-lint",
       "description": "Mod: ESLint for agent work. Reports what each worker left behind (TODOs, stubs, skipped tests, out-of-scope files, open issues, ESLint, line budget) to the conductor; /leftovers pane.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Vitor Gorla"
       },

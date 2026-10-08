@@ -30,6 +30,6 @@ export type Mode = 'report' | 'observe'
 
 declare module 'claude-code' {
   interface PluginState {
-    'agent-lint': { reports: LintReport[]; mode: Mode; label: string }
+    'agent-lint': { reports: LintReport[]; mode: Mode; label: string; eslint: boolean }
   }
 }

@@ -212,16 +212,27 @@ export function summary(report: LintReport): string {
     : `✖ ${plural(errors + warnings, 'problem')} (${plural(errors, 'error')}, ${plural(warnings, 'warning')}) · ${lines}`
 }
 
+const MAX_FIELD = 200
+// Built from escapes: literal U+2028/U+2029 inside a regex literal would end the line in the source
+const LINE_BREAKS = new RegExp('[\\r\\n\\t\\u2028\\u2029]+', 'g')
+const CONTROL_CHARS = new RegExp('[\\u0000-\\u001f\\u007f]', 'g')
+
+// Worker output and file names reach the conductor's context: one line each, bounded,
+// so a crafted message cannot pose as a new instruction block
+export function oneLine(text: string): string {
+  return text.replace(LINE_BREAKS, ' ').replace(CONTROL_CHARS, '').slice(0, MAX_FIELD)
+}
+
 // ESLint-style text, grouped by file
 export function formatReport(report: LintReport): string {
   const card = report.card ? `${report.card.id}${report.card.title ? ` ${report.card.title}` : ''}` : report.agentId
-  const out = [`agent-lint · ${card} (${report.model})`]
+  const out = [`agent-lint · ${oneLine(card)} (${oneLine(report.model)})`]
   const files = [...new Set(report.problems.map(p => p.file))]
   for (const file of files) {
-    out.push(`  ${file}`)
+    out.push(`  ${oneLine(file)}`)
     for (const p of report.problems.filter(q => q.file === file)) {
       const at = p.line > 0 ? String(p.line) : '-'
-      out.push(`    ${at.padEnd(5)} ${p.severity.padEnd(5)}  ${p.rule.padEnd(16)} ${p.message}`)
+      out.push(`    ${at.padEnd(5)} ${p.severity.padEnd(5)}  ${oneLine(p.rule).padEnd(16)} ${oneLine(p.message)}`)
     }
   }
   out.push(summary(report))

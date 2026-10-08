@@ -11,7 +11,7 @@ Both skills share the same flow. Conductor-Lint adds a lint layer: ESLint on eve
 claude --model opus --plugin-dir <repo>/plugins/agent-ledger --plugin-dir <repo>/plugins/agent-lint
 ```
 
-`agent-lint` switches mode by itself: **observe** under `/conductor` (it records leftovers silently, so plain runs are measured too) and **report** under `/conductor-lint` (findings go back to the conductor).
+If the project is yours and trusted, run `/agent-lint eslint on` in both runs so ESLint findings are counted the same way. `agent-lint` switches mode by itself: **observe** under `/conductor` (it records leftovers silently, so plain runs are measured too) and **report** under `/conductor-lint` (findings go back to the conductor).
 
 ## One run
 

@@ -220,7 +220,7 @@ The **`agent-lint`** mod is ESLint for agent work. When a worker finishes it che
 | `skipped-test` | error | `.only`, `.skip`, `xit`, `@pytest.mark.skip` |
 | `out-of-scope` | error | files changed outside the card's `writes` |
 | `open-issue` | error | the worker's own "open issues" line |
-| `eslint/<rule>` | as configured | the project's ESLint, on added lines only |
+| `eslint/<rule>` | as configured | the project's ESLint, on added lines only. **Off until you run `/agent-lint eslint on`**: ESLint executes the project's config file as code, so the mod never runs it on its own |
 | `diff-budget` | warn | lines added over the card's budget (tests, lockfiles and generated files excluded) |
 | `console-left`, `any-type` | warn | debug output, `any` in TypeScript |
 
