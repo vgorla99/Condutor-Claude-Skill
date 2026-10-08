@@ -12,15 +12,19 @@
     {
       "name": "conductor",
       "description": "Orchestration skill: rewrites your prompt as a technical brief, plans task cards, picks skills, agent and model per card, verifies and reports.",
-      "version": "0.1.0",
-      "author": { "name": "Vitor Gorla" },
+      "version": "0.2.0",
+      "author": {
+        "name": "Vitor Gorla"
+      },
       "source": "./plugins/conductor"
     },
     {
       "name": "agent-ledger",
       "description": "Mod: /agents pane with every agent, its model, status, tokens and cache share; last turn's tokens by model above the prompt.",
       "version": "0.1.0",
-      "author": { "name": "Vitor Gorla" },
+      "author": {
+        "name": "Vitor Gorla"
+      },
       "source": "./plugins/agent-ledger"
     }
   ]

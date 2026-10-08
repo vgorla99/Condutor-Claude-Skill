@@ -1,7 +1,7 @@
 ---
 name: conductor
 disable-model-invocation: true
-description: Run only when the user invokes it. The main session (Opus 5.5) rewrites the request into a precise technical brief, plans it as task cards, picks the skills, agent and model (Haiku 4.5, Sonnet 5.5, Opus 5.5) for each card, dispatches workers, verifies their results and reports. Goal is token and work efficiency, not raw savings.
+description: Run only when the user invokes it. The main session (Opus 5.5) rewrites the request into a precise technical brief, plans it as task cards, picks the skills, agent and model (Haiku 5.5, Sonnet 5.5, Opus 5.5) for each card, dispatches workers, verifies their results and reports. Goal is token and work efficiency, not raw savings.
 ---
 
 # Conductor
@@ -105,13 +105,18 @@ The worker loads the card's skills with the Skill tool, primary first. A special
 
 ## 4. Route agent and model
 
-Prefer a specialist agent from the available agent types when one fits the card (a language reviewer, a build-error resolver, a docs lookup agent); its own definition may already pin a model. Otherwise use `general-purpose` with the Agent tool's `model` set from this rubric:
+Pick the agent for its role (a specialist from the available agent types when one fits, otherwise `general-purpose`), then **always set the Agent tool's `model` from this rubric**. The `model` parameter overrides any model pinned in the agent's own definition; many specialist agents pin Sonnet, so leaving `model` unset quietly sends their cards to Sonnet.
+
+Haiku first. A card goes to Haiku whenever it passes the **spec test**: the card names the exact files to write, points to an existing pattern or example to follow, and has acceptance checks a command can verify. A tight card needs execution, not judgment, and Haiku 5.5 executes well. Only when a card fails the spec test does it move up.
 
 | Model | Use for |
 | --- | --- |
-| `haiku` (Haiku 4.5) | search and exploration, docs lookup, renames, formatting, boilerplate from a clear spec, summarizing files |
-| `sonnet` (Sonnet 5.5) | default: features, components, tests, refactors, build fixes, reviews, video compositions |
+| `haiku` (Haiku 5.5) | **default for implementation that passes the spec test**: a component or page section following an existing pattern, styling and layout changes, single-file features, tests written from a clear spec, CRUD and form wiring, config, copy and docs, renames and refactors with a clear target; plus search, exploration and docs lookup |
+| `sonnet` (Sonnet 5.5) | work that needs judgment: features spanning several files or layers, no pattern to follow, debugging with an unknown cause, reviews, video compositions with timing and motion decisions |
 | `opus` (Opus 5.5) | architecture, ambiguous or cross-cutting bugs, auth, payments, migrations, data-loss risk, anything a wrong answer makes expensive |
+
+- A card failing the spec test because it is too big: split it until the parts pass, rather than sending the whole to Sonnet.
+- Escalation (step 6) is the safety net: a Haiku card that fails its checks retries on Sonnet with the evidence. Note each escalation in the report, so a pattern of Haiku failures on one kind of card shows up and the rubric can move that kind to Sonnet.
 
 - Risk beats size: a small change to auth or payments still goes to Opus or ends with a security review.
 - The conductor never does the bulk work itself. It does the brief, the plan, verification and integration.
@@ -161,4 +166,5 @@ Mark cards done in `tasks/todo.md`. If the `agent-ledger` mod is loaded, point t
 - Workers returning whole files or long logs: it moves the cost back to Opus.
 - Two workers writing the same file.
 - Picking Opus for a card because it "feels important" instead of by the rubric.
+- Sending a tight, pattern-following card to Sonnet, or dispatching a specialist agent without setting `model`.
 - Skipping the brief because the request looks clear.

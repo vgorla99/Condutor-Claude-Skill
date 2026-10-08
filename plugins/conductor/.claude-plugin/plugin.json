@@ -1,7 +1,10 @@
 {
   "name": "conductor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Opus-led orchestration: technical brief, task cards, per-card skills, agent and model, verification",
-  "author": { "name": "Vitor Gorla", "url": "https://github.com/vgorla99" },
+  "author": {
+    "name": "Vitor Gorla",
+    "url": "https://github.com/vgorla99"
+  },
   "license": "MIT"
 }

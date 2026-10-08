@@ -17,14 +17,14 @@ CONDUCTOR (main session, Opus) ─ briefs, plans, routes, verifies. Never does t
  │ 1. Brief: your words → precise technical XML brief, interpretations listed for you to check
  │ 2. Plan: task cards in tasks/todo.md → you approve
  │ 3. Skills: searches every installed skill, picks a primary + supporting skills per card
- │ 4. Route: specialist agent if one fits, else general-purpose on haiku / sonnet / opus
+ │ 4. Route: Haiku first for tight cards; model always set explicitly
  │ 5. Dispatch: parallel only when cards write different files
  │ 6. Verify: runs the build/tests itself; failed card retries one model up
  │ 7. Report: card · agent · model · skills · result · evidence
  ▼
 WORKERS (one level only; workers never spawn workers)
- ├ Haiku:  search, docs lookup, renames, boilerplate
- ├ Sonnet: features, tests, refactors, reviews (the default)
+ ├ Haiku:  tight cards: pattern-following code, styling, tests from spec, search (the default)
+ ├ Sonnet: judgment: multi-file features, unknown bugs, reviews
  └ Opus:   architecture, hard bugs, auth, payments, data-loss risk
  ▲
 AGENT-LEDGER MOD ─ /agents: every agent, its model, status, tokens and cache share
@@ -153,11 +153,11 @@ There is no fixed skill list and no cap. For each card the conductor searches al
 
 | Model | Used for |
 | --- | --- |
-| Haiku | search and exploration, docs lookup, renames, formatting, boilerplate from a clear spec |
-| Sonnet | the default: features, components, tests, refactors, build fixes, reviews |
+| Haiku 5.5 | the default for any card that passes the **spec test** (exact files to write, an existing pattern to follow, acceptance a command can verify): pattern-following components, styling, single-file features, tests from a spec, form wiring, config, docs, search |
+| Sonnet 5.5 | work that needs judgment: multi-file features with no pattern, debugging with an unknown cause, reviews |
 | Opus | architecture, ambiguous bugs, auth, payments, migrations, data-loss risk |
 
-Risk beats size: a one-line change to auth still goes to Opus or gets a security review.
+Risk beats size: a one-line change to auth still goes to Opus or gets a security review. A card too big for the spec test is split, not sent to Sonnet whole. The conductor always sets each worker's `model` explicitly, because many specialist agents pin Sonnet in their own definition.
 
 ### 5. Why it stays efficient
 
