@@ -5,8 +5,8 @@
     "url": "https://github.com/vgorla99"
   },
   "metadata": {
-    "description": "Conductor: an Opus-led orchestration skill that briefs, plans and routes work to Haiku, Sonnet and Opus workers, plus the agent-ledger mod that shows which agent ran on which model and what it used.",
-    "version": "0.1.0"
+    "description": "Three nested levels of orchestration for Claude Code: conductor (subagents in one chat), conductor-lint (plus a quality gate) and conductor-hq (sessions across days), with the agent-ledger and agent-lint mods.",
+    "version": "0.2.0"
   },
   "plugins": [
     {
@@ -20,12 +20,39 @@
     },
     {
       "name": "agent-ledger",
-      "description": "Mod: /agents pane with every agent, its model, status, tokens and cache share; last turn's tokens by model above the prompt.",
-      "version": "0.1.0",
+      "description": "Mod: /ledger pane with every agent, its model, status, tokens and cache share; last turn's tokens by model above the prompt.",
+      "version": "0.3.0",
       "author": {
         "name": "Vitor Gorla"
       },
       "source": "./plugins/agent-ledger"
+    },
+    {
+      "name": "conductor-lint",
+      "description": "Conductor plus a lint layer: ESLint, line budgets per card, worker efficiency rules, agent-lint reports and one fix round.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Vitor Gorla"
+      },
+      "source": "./plugins/conductor-lint"
+    },
+    {
+      "name": "agent-lint",
+      "description": "Mod: ESLint for agent work. Reports what each worker left behind (TODOs, stubs, skipped tests, out-of-scope files, open issues, ESLint, line budget) to the conductor; /leftovers pane.",
+      "version": "0.1.3",
+      "author": {
+        "name": "Vitor Gorla"
+      },
+      "source": "./plugins/agent-lint"
+    },
+    {
+      "name": "conductor-hq",
+      "description": "Level 3: one HQ chat per project with its memory in HQ/ files; launches fresh worker sessions from briefs (code workers run conductor-lint), reviews their inbox reports, nothing posted or sent without approval.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Vitor Gorla"
+      },
+      "source": "./plugins/conductor-hq"
     }
   ]
 }

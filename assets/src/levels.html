@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--panel:#151922;--line:#2a303c;--text:#f2f0ea;--muted:#9aa0ad;--accent:#e8a24a;--haiku:#6cc5a0;--sonnet:#7aa7ff;--opus:#e8a24a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1280px;height:640px;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",sans-serif;padding:56px 64px;display:grid;grid-template-columns:430px 1fr;gap:44px}
+.tag{font:500 18px "JetBrains Mono",Consolas,monospace;color:var(--accent);letter-spacing:.05em}
+h1{font-size:76px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-top:20px}
+p{font-size:25px;color:var(--muted);line-height:1.38;margin-top:20px}
+p b{color:var(--text);font-weight:500}
+.repo{font:500 18px "JetBrains Mono",Consolas,monospace;color:var(--muted);margin-top:auto}
+.left{display:flex;flex-direction:column}
+.box{border:1px solid var(--line);border-radius:18px;padding:18px 20px;background:var(--panel)}
+.box .lv{font:500 15px "JetBrains Mono",Consolas,monospace;color:var(--muted);letter-spacing:.06em}
+.box .nm{font-size:27px;font-weight:800;margin-top:4px}
+.box .nm span{font-weight:400;color:var(--muted);font-size:20px;margin-left:10px}
+.l3{height:100%;border-color:#3a4150}
+.l2{margin-top:16px;background:#1a1f2a}
+.l1{margin-top:14px;background:#1f2532}
+.cards{display:flex;gap:10px;margin-top:14px}
+.pill{font:500 18px "JetBrains Mono",Consolas,monospace;padding:8px 14px;border-radius:999px;border:1px solid}
+.h{color:var(--haiku);border-color:var(--haiku)}.s{color:var(--sonnet);border-color:var(--sonnet)}.o{color:var(--opus);border-color:var(--opus)}
+.gate{margin-top:14px;font:500 17px "JetBrains Mono",Consolas,monospace;color:var(--accent);border:1px dashed var(--accent);border-radius:12px;padding:9px 12px}
+.flow{margin-top:20px;font:500 17px "JetBrains Mono",Consolas,monospace;color:var(--muted)}.flow b{color:var(--haiku);font-weight:500}
+.files{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.f{font:500 15px "JetBrains Mono",Consolas,monospace;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+</style></head><body>
+<div class="left">
+  <div class="tag">CLAUDE CODE · 3 SKILLS · 2 MODS</div>
+  <h1>Conductor</h1>
+  <p><b>Three levels of orchestration that nest.</b> Small contexts, the cheapest model that does it right, and nothing ships without your OK.</p>
+  <div class="repo">vgorla99/Condutor-Claude-Skill</div>
+</div>
+<div class="box l3">
+  <div class="lv">LEVEL 3 · ACROSS DAYS</div>
+  <div class="nm">conductor-hq<span>HQ chat → fresh worker sessions</span></div>
+  <div class="files"><span class="f">STATUS</span><span class="f">DECISIONS</span><span class="f">briefs/</span><span class="f">inbox/</span><span class="f">review/</span></div>
+  <div class="box l2">
+    <div class="lv">LEVEL 2 · ONE SESSION + GATE</div>
+    <div class="nm">conductor-lint<span>ESLint · line budget · 1 fix round</span></div>
+    <div class="box l1">
+      <div class="lv">LEVEL 1 · ONE CHAT</div>
+      <div class="nm">conductor<span>brief → cards → model per card</span></div>
+      <div class="cards"><span class="pill h">haiku</span><span class="pill s">sonnet</span><span class="pill o">opus</span></div>
+    </div>
+    <div class="gate">lint gate → verify build + tests</div>
+  </div>
+  <div class="flow">worker report → <b>inbox</b> → you approve → ship</div>
+</div>
+</body></html>
