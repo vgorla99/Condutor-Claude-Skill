@@ -52,7 +52,7 @@ test('shows a subagent with its type, model, tokens and cache share', async ($, 
   expect(await pane.find({ type: 'Text', text: 'Find auth hook' })).toBeDefined()
 })
 
-test('counts the main loop as the conductor, and /agents-reset clears the ledger', async ($, on) => {
+test('counts the main loop as the conductor, and /ledger-reset clears the ledger', async ($, on) => {
   on('turn.complete', () => ({ text: '' }))
   on('clock.now', () => ({ value: 1_760_000_000_000 }))
   on('env.get', ($, e) => ({ value: e.name === 'USERPROFILE' ? 'C:/Users/test' : undefined }))
@@ -68,11 +68,11 @@ test('counts the main loop as the conductor, and /agents-reset clears the ledger
   const pane = await mountPane($)
   expect(await pane.find({ type: 'Text', text: /conductor\s+opus\s+idle/ })).toBeDefined()
 
-  await $.command.run({ command: 'agents-reset', args: '', origin: { kind: 'composer' } })
+  await $.command.run({ command: 'ledger-reset', args: '', origin: { kind: 'composer' } })
   expect(await pane.find({ type: 'Text', text: /No agents yet/ })).toBeDefined()
 })
 
-test('/agents-reset names the run and /agents-export saves it as JSON', async ($, on) => {
+test('/ledger-reset names the run and /ledger-export saves it as JSON', async ($, on) => {
   const writes: { path: string; text: string }[] = []
   on('turn.complete', () => ({ text: '' }))
   on('clock.now', () => ({ value: 1_760_000_000_000 }))
@@ -83,7 +83,7 @@ test('/agents-reset names the run and /agents-export saves it as JSON', async ($
     return { value: undefined }
   })
 
-  await $.command.run({ command: 'agents-reset', args: 'A accordion', origin: { kind: 'composer' } })
+  await $.command.run({ command: 'ledger-reset', args: 'A accordion', origin: { kind: 'composer' } })
   await $.turn.complete({
     answer: 'ok',
     durationMs: 10,
@@ -92,7 +92,7 @@ test('/agents-reset names the run and /agents-export saves it as JSON', async ($
     reason: 'answer',
     usage: { ...haikuUsage, model: 'claude-opus-5-5' },
   })
-  const answer = await $.command.run({ command: 'agents-export', args: '' })
+  const answer = await $.command.run({ command: 'ledger-export', args: '' })
 
   expect(writes).toHaveLength(1)
   expect(writes[0]?.path).toMatch(/[\\/]\.claude[\\/]conductor-runs[\\/]A-accordion-\d{8}-\d{4}-ledger\.json$/)
@@ -106,6 +106,6 @@ test('/agents-reset names the run and /agents-export saves it as JSON', async ($
 test('security: a worker cannot clear the ledger', async ($, on) => {
   on('turn.complete', () => ({ text: '' }))
   on('clock.now', () => ({ value: 1_760_000_000_000 }))
-  const answer = await $.command.run({ command: 'agents-reset', args: '' })
+  const answer = await $.command.run({ command: 'ledger-reset', args: '' })
   expect(answer.text).toContain('only the person')
 })

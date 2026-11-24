@@ -6,7 +6,7 @@
 
 The goal is **token and work efficiency**: every piece of work runs on the cheapest model that does it right, with the skills that fit it, and nothing is done twice. It is not "spend less at any cost".
 
-![How Conductor works: prompt, technical brief, task cards with models, verify and report, plus the /agents ledger](assets/how-it-works.png)
+![How Conductor works: prompt, technical brief, task cards with models, verify and report, plus the /ledger pane](assets/how-it-works.png)
 
 ```
 You: /conductor <task>
@@ -27,7 +27,7 @@ WORKERS (one level only; workers never spawn workers)
  ├ Sonnet: judgment: multi-file features, unknown bugs, reviews
  └ Opus:   architecture, hard bugs, auth, payments, data-loss risk
  ▲
-AGENT-LEDGER MOD ─ /agents: every agent, its model, status, tokens and cache share
+AGENT-LEDGER MOD ─ /ledger: every agent, its model, status, tokens and cache share
 ```
 
 ## What's in this repo
@@ -35,7 +35,7 @@ AGENT-LEDGER MOD ─ /agents: every agent, its model, status, tokens and cache s
 | Path | What it is |
 | --- | --- |
 | `plugins/conductor/skills/conductor/SKILL.md` | The conductor skill. Runs only when you invoke it. |
-| `plugins/agent-ledger/` | The mod (a Claude Code plugin with a hooks module): `/agents` pane, a band above the prompt, `/agents-reset`. Includes tests. |
+| `plugins/agent-ledger/` | The mod (a Claude Code plugin with a hooks module): `/ledger` pane, a band above the prompt, `/ledger-reset`. Includes tests. |
 | `.claude-plugin/marketplace.json` | Lets you install both through `/plugin`. |
 
 ## Requirements
@@ -100,8 +100,8 @@ Then:
 | Command | What it does |
 | --- | --- |
 | `/conductor <task>` | Brief, cards, then waits for your approval before any work |
-| `/agents` | Opens the ledger pane |
-| `/agents-reset` | Clears the ledger |
+| `/ledger` | Opens the ledger pane |
+| `/ledger-reset` | Clears the ledger |
 
 ## How the conductor works
 
@@ -173,7 +173,7 @@ If you use the [Codex plugin](https://github.com/openai/codex-plugin-cc) and agr
 
 ## The agent-ledger mod
 
-`/agents` opens a pane:
+`/ledger` opens a pane:
 
 ```
 conductor            opus    idle     in 48.2k  out 3.1k  cache 82%
@@ -226,7 +226,7 @@ The **`agent-lint`** mod is ESLint for agent work. When a worker finishes it che
 
 Under `/conductor-lint` it sends each report back to the conductor (report mode); under `/conductor` it only records (observe mode), so plain runs are measured too. `/leftovers` opens the pane; `.agentlint.json` sets any rule to `off`, `warn` or `error`.
 
-`agent-ledger` 0.2.0 adds named runs and exports for the comparison: `/agents-reset <label>`, `/agents-export`. How to run the comparison and the scorecard: [docs/comparison.md](docs/comparison.md).
+`agent-ledger` 0.3.0 (commands renamed from `/agents` to `/ledger`, since Claude Code has a built-in `/agents`) has named runs and exports for the comparison: `/ledger-reset <label>`, `/ledger-export`. How to run the comparison and the scorecard: [docs/comparison.md](docs/comparison.md).
 
 ## Customize
 

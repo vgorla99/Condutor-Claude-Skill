@@ -158,7 +158,7 @@ Escalations: <card, from, to, why> or none
 Open: <blockers and next action> or none
 ```
 
-Mark cards done in `tasks/todo.md`. If the `agent-ledger` mod is loaded, point the user to `/agents` for tokens per agent and model.
+Mark cards done in `tasks/todo.md`. If the `agent-ledger` mod is loaded, point the user to `/ledger` for tokens per agent and model.
 
 ## Anti-patterns
 

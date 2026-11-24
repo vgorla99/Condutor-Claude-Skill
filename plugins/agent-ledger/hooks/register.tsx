@@ -95,9 +95,9 @@ function byModel(rows: readonly AgentRow[]): ModelTotal[] {
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'agents', description: 'Show every agent, its model and tokens' })
-    await $.command.register({ name: 'agents-reset', description: 'Clear the ledger and start a named run: /agents-reset <label>' })
-    await $.command.register({ name: 'agents-export', description: 'Save this run to ~/.claude/conductor-runs as JSON' })
+    await $.command.register({ name: 'ledger', description: 'Show every agent, its model and tokens' })
+    await $.command.register({ name: 'ledger-reset', description: 'Clear the ledger and start a named run: /ledger-reset <label>' })
+    await $.command.register({ name: 'ledger-export', description: 'Save this run to ~/.claude/conductor-runs as JSON' })
     if ((await read($, run)) === null) {
       const startedAt = await $.clock.now()
       await update($, run, () => ({ label: DEFAULT_LABEL, startedAt }))
@@ -105,13 +105,13 @@ export const register: Register = on => {
     return next(e)
   })
 
-  on('command.run', { command: 'agents' }, async $ => {
+  on('command.run', { command: 'ledger' }, async $ => {
     await $.ui.open({ id: PANE, title: 'Agents' })
     return { text: 'Agent ledger opened.' }
   })
 
   // Clearing the ledger is the person's call: a worker must not erase its own record
-  on('command.run', { command: 'agents-reset' }, async ($, e) => {
+  on('command.run', { command: 'ledger-reset' }, async ($, e) => {
     if (e.origin?.kind !== 'composer') {
       return { text: 'agent-ledger: only the person at the prompt can clear the ledger.' }
     }
@@ -123,7 +123,7 @@ export const register: Register = on => {
     return { text: `Agent ledger cleared. Run "${label}" started.` }
   })
 
-  on('command.run', { command: 'agents-export' }, async $ => {
+  on('command.run', { command: 'ledger-export' }, async $ => {
     const list = await read($, agents)
     const current = (await read($, run)) ?? { label: DEFAULT_LABEL, startedAt: 0 }
     const now = await $.clock.now()
@@ -247,7 +247,7 @@ export const register: Register = on => {
     return (
       <Box flexDirection="column">
         {below}
-        <Text dimColor>Last turn: {summary}  (/agents)</Text>
+        <Text dimColor>Last turn: {summary}  (/ledger)</Text>
       </Box>
     )
   })

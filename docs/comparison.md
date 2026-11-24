@@ -24,9 +24,9 @@ git worktree add ../compare-B-<task> <commit>
 
 | Step | Run A (Conductor) | Run B (Conductor-Lint) |
 | --- | --- | --- |
-| Start | `/agents-reset A-<task>` and `/leftovers-reset A-<task>` | `/agents-reset B-<task>` and `/leftovers-reset B-<task>` |
+| Start | `/ledger-reset A-<task>` and `/leftovers-reset A-<task>` | `/ledger-reset B-<task>` and `/leftovers-reset B-<task>` |
 | Work | `/conductor <same prompt>` | `/conductor-lint <same prompt>` |
-| End | `/agents-export` and `/leftovers-export` | `/agents-export` and `/leftovers-export` |
+| End | `/ledger-export` and `/leftovers-export` | `/ledger-export` and `/leftovers-export` |
 
 Exports land in `~/.claude/conductor-runs/` as `<label>-<time>-ledger.json` and `<label>-<time>-lint.json`.
 
