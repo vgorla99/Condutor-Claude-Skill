@@ -1,0 +1,10 @@
+{
+  "name": "conductor-hq",
+  "version": "0.1.0",
+  "description": "One HQ chat per project with its memory in HQ/ files; launches fresh worker sessions from briefs, reviews their reports, nothing posted or sent without approval",
+  "author": {
+    "name": "Vitor Gorla",
+    "url": "https://github.com/vgorla99"
+  },
+  "license": "MIT"
+}

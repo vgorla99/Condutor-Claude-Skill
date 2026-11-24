@@ -5,8 +5,8 @@
     "url": "https://github.com/vgorla99"
   },
   "metadata": {
-    "description": "Conductor: an Opus-led orchestration skill that briefs, plans and routes work to Haiku, Sonnet and Opus workers, plus the agent-ledger mod that shows which agent ran on which model and what it used.",
-    "version": "0.1.0"
+    "description": "Three nested levels of orchestration for Claude Code: conductor (subagents in one chat), conductor-lint (plus a quality gate) and conductor-hq (sessions across days), with the agent-ledger and agent-lint mods.",
+    "version": "0.2.0"
   },
   "plugins": [
     {
@@ -44,6 +44,15 @@
         "name": "Vitor Gorla"
       },
       "source": "./plugins/agent-lint"
+    },
+    {
+      "name": "conductor-hq",
+      "description": "Level 3: one HQ chat per project with its memory in HQ/ files; launches fresh worker sessions from briefs (code workers run conductor-lint), reviews their inbox reports, nothing posted or sent without approval.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Vitor Gorla"
+      },
+      "source": "./plugins/conductor-hq"
     }
   ]
 }
