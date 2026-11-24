@@ -6,7 +6,7 @@
 
 The goal is **token and work efficiency**: every piece of work runs on the cheapest model that does it right, with the skills that fit it, and nothing is done twice. It is not "spend less at any cost".
 
-![How Conductor works: prompt, technical brief, task cards with models, verify and report, plus the /agents ledger](assets/how-it-works.png)
+![How Conductor works: prompt, technical brief, task cards with models, verify and report, plus the /ledger pane](assets/how-it-works.png)
 
 ```
 You: /conductor <task>
@@ -27,7 +27,7 @@ WORKERS (one level only; workers never spawn workers)
  ├ Sonnet: judgment: multi-file features, unknown bugs, reviews
  └ Opus:   architecture, hard bugs, auth, payments, data-loss risk
  ▲
-AGENT-LEDGER MOD ─ /agents: every agent, its model, status, tokens and cache share
+AGENT-LEDGER MOD ─ /ledger: every agent, its model, status, tokens and cache share
 ```
 
 ## What's in this repo
@@ -35,7 +35,7 @@ AGENT-LEDGER MOD ─ /agents: every agent, its model, status, tokens and cache s
 | Path | What it is |
 | --- | --- |
 | `plugins/conductor/skills/conductor/SKILL.md` | The conductor skill. Runs only when you invoke it. |
-| `plugins/agent-ledger/` | The mod (a Claude Code plugin with a hooks module): `/agents` pane, a band above the prompt, `/agents-reset`. Includes tests. |
+| `plugins/agent-ledger/` | The mod (a Claude Code plugin with a hooks module): `/ledger` pane, a band above the prompt, `/ledger-reset`. Includes tests. |
 | `.claude-plugin/marketplace.json` | Lets you install both through `/plugin`. |
 
 ## Requirements
@@ -100,8 +100,8 @@ Then:
 | Command | What it does |
 | --- | --- |
 | `/conductor <task>` | Brief, cards, then waits for your approval before any work |
-| `/agents` | Opens the ledger pane |
-| `/agents-reset` | Clears the ledger |
+| `/ledger` | Opens the ledger pane |
+| `/ledger-reset` | Clears the ledger |
 
 ## How the conductor works
 
@@ -173,7 +173,7 @@ If you use the [Codex plugin](https://github.com/openai/codex-plugin-cc) and agr
 
 ## The agent-ledger mod
 
-`/agents` opens a pane:
+`/ledger` opens a pane:
 
 ```
 conductor            opus    idle     in 48.2k  out 3.1k  cache 82%
@@ -201,6 +201,32 @@ cd plugins/agent-ledger
 claude plugin validate .
 claude plugin test .
 ```
+
+## Conductor-Lint and agent-lint (experimental)
+
+A second skill, **`conductor-lint`**, is Conductor plus a lint layer, so the two can be compared on the same tasks:
+
+- **Lint gate:** uses the project's ESLint (or ruff). With none, it proposes a one-time setup card based on [Matheus Gomes' ESLint setup guide](https://github.com/soumatheusgomes/vibe-coding-toolkit/blob/main/docs/prompts/07-eslint-complete-setup.md) (MIT).
+- **Line budget per card:** the worker states its approach and an estimated line count before coding, and has to justify going over. A warning, never an error, so nobody crams code to hit a number.
+- **Efficiency rules:** reuse what exists, no speculative abstractions, nothing left unfinished, lint your own files.
+- **One fix round:** findings are collected while cards run, fixed together at the end in one round, and whatever is left goes to you.
+
+The **`agent-lint`** mod is ESLint for agent work. When a worker finishes it checks the lines that worker added and reports, ESLint-style, what it left behind:
+
+| Rule | Severity | Catches |
+| --- | --- | --- |
+| `todo-left` | error | TODO / FIXME / HACK / XXX |
+| `stub-left` | error | not implemented, `throw new Error("TODO")`, lorem ipsum, TBD, PLACEHOLDER |
+| `skipped-test` | error | `.only`, `.skip`, `xit`, `@pytest.mark.skip` |
+| `out-of-scope` | error | files changed outside the card's `writes` |
+| `open-issue` | error | the worker's own "open issues" line |
+| `eslint/<rule>` | as configured | the project's ESLint, on added lines only. **Off until you run `/agent-lint eslint on`**: ESLint executes the project's config file as code, so the mod never runs it on its own |
+| `diff-budget` | warn | lines added over the card's budget (tests, lockfiles and generated files excluded) |
+| `console-left`, `any-type` | warn | debug output, `any` in TypeScript |
+
+Under `/conductor-lint` it sends each report back to the conductor (report mode); under `/conductor` it only records (observe mode), so plain runs are measured too. `/leftovers` opens the pane; `.agentlint.json` sets any rule to `off`, `warn` or `error`.
+
+`agent-ledger` 0.3.0 (commands renamed from `/agents` to `/ledger`, since Claude Code has a built-in `/agents`) has named runs and exports for the comparison: `/ledger-reset <label>`, `/ledger-export`. How to run the comparison and the scorecard: [docs/comparison.md](docs/comparison.md).
 
 ## Customize
 
